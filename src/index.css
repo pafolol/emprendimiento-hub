@@ -1,0 +1,766 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-reloj: "Nunito", "Instrument Sans", ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", monospace;
+
+  /* Blanco y azul: Emprendimiento Tec. */
+  --color-tec: #1f5fe0;
+  --color-tec-profundo: #1f2863;
+  --color-tec-indigo: #3634c4;
+  --color-cielo: #bcd4ff;
+  --color-tinta: #0a1a3a;
+  --color-papel: #f7f9fd;
+  --color-raya: #e8eef9;
+  --color-marco: #cfd6e3;
+  --color-vacio: #eceff4;
+  --color-bandeja-alta: #f2f4f8;
+  --color-bandeja-baja: #d9dee7;
+  --color-gris-reloj: #9aa3b2;
+}
+
+@property --ambiente {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #bcd4ff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-papel);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-tec);
+  color: white;
+}
+
+:focus-visible {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------------------
+   El menú: papel blanco con las rayas finas del Wii y una luz que toma el
+   color del canal señalado.
+--------------------------------------------------------------------------- */
+.menu {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 5px, var(--color-raya) 5px 6px),
+    linear-gradient(180deg, #ffffff, var(--color-papel));
+  transition: --ambiente 600ms ease;
+}
+
+.menu-ambiente {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(120rem, 160vw);
+  aspect-ratio: 1.6;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--ambiente) 55%, transparent), transparent);
+  filter: blur(30px);
+  opacity: 0.75;
+  pointer-events: none;
+  animation: respira 9s ease-in-out infinite;
+}
+
+@keyframes respira {
+  50% {
+    scale: 1.08;
+    opacity: 0.55;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   El título.
+--------------------------------------------------------------------------- */
+.titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 0.18em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 7.4vw, 6.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-tec-profundo);
+}
+
+.titulo-rayo {
+  width: 0.82em;
+  height: 0.82em;
+  filter: drop-shadow(0 0.08em 0.12em rgb(54 52 196 / 0.3));
+}
+
+.titulo-palabra {
+  background: linear-gradient(180deg, var(--color-tec-profundo) 30%, var(--color-tec-indigo));
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding-bottom: 0.08em;
+}
+
+.titulo-palabra > span {
+  color: transparent;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.titulo-hub {
+  display: inline-block;
+  margin-left: 0.05em;
+  padding: 0.08em 0.32em 0.14em;
+  border-radius: 0.32em;
+  background: linear-gradient(180deg, #3b7bff, var(--color-tec));
+  color: white;
+  letter-spacing: -0.02em;
+  box-shadow:
+    inset 0 0.04em 0 rgb(255 255 255 / 0.45),
+    0 0.12em 0.3em -0.06em rgb(31 95 224 / 0.55);
+}
+
+/* ---------------------------------------------------------------------------
+   La rejilla de canales.
+--------------------------------------------------------------------------- */
+.rejilla {
+  display: grid;
+  /* Tres filas siempre caben entre el título y la bandeja. */
+  width: min(100%, 76rem, max(34rem, calc((100svh - 26.5rem) * 2.05)));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.6vw, 1.4rem);
+}
+
+@media (max-width: 900px) {
+  .rejilla {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.canal {
+  --fondo: var(--color-vacio);
+  --tinta: var(--color-tec);
+  --acento: var(--color-tec);
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10.5;
+  container-type: inline-size;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* El bisel gris de cada canal; al señalarlo se enciende en azul y late. */
+.canal-marco {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.35rem;
+  background: linear-gradient(180deg, #fbfcfe, #e4e8ef);
+  box-shadow:
+    inset 0 0 0 1px var(--color-marco),
+    0 1px 2px rgb(10 26 58 / 0.08);
+  transition:
+    box-shadow 200ms ease,
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.canal-pantalla {
+  position: absolute;
+  inset: 5px;
+  display: block;
+  overflow: hidden;
+  border-radius: 1.05rem;
+  background:
+    radial-gradient(120% 90% at 20% 0%, color-mix(in oklab, var(--fondo) 70%, white), transparent 60%),
+    var(--fondo);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.06);
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.canal-rayas {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, transparent 0 3px, rgb(255 255 255 / 0.12) 3px 4px);
+  pointer-events: none;
+}
+
+.canal-vacio {
+  cursor: default;
+}
+
+.canal-vacio .canal-pantalla {
+  background: linear-gradient(180deg, #f3f5f8, var(--color-vacio));
+}
+
+.canal-vacio .canal-rayas {
+  background: repeating-linear-gradient(180deg, transparent 0 3px, rgb(10 26 58 / 0.025) 3px 4px);
+}
+
+.canal-nombre {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 9%;
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15.5cqi;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: var(--tinta);
+  text-wrap: balance;
+}
+
+.canal-motivo {
+  position: absolute;
+  right: 6%;
+  top: 9%;
+  width: 34%;
+  height: 40%;
+  color: var(--tinta);
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.canal-motivo svg {
+  float: right;
+}
+
+.canal-foto {
+  position: absolute;
+  right: 6%;
+  top: 9%;
+  width: 46%;
+  height: 52%;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  border: 3px solid white;
+  box-shadow: 0 0.5rem 1rem -0.3rem rgb(10 26 58 / 0.35);
+  rotate: 3deg;
+}
+
+.canal-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: kenburns 14s ease-in-out infinite alternate;
+}
+
+@keyframes kenburns {
+  to {
+    scale: 1.14;
+    translate: -4% 3%;
+  }
+}
+
+/* La luz que corre por el canal señalado. */
+.canal-brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.55) 50%, transparent 65%);
+  translate: -120% 0;
+  pointer-events: none;
+}
+
+.canal[data-enfocado="true"] {
+  z-index: 2;
+}
+
+.canal[data-enfocado="true"] .canal-marco {
+  transform: scale(1.06);
+  box-shadow:
+    inset 0 0 0 1px var(--color-marco),
+    0 0 0 4px var(--color-tec),
+    0 0 0 8px rgb(31 95 224 / 0.22),
+    0 1.2rem 2rem -0.8rem rgb(10 26 58 / 0.45);
+  animation: late 1.3s ease-in-out infinite;
+}
+
+.canal[data-enfocado="true"] .canal-pantalla {
+  transform: scale(1.06);
+}
+
+.canal[data-enfocado="true"] .canal-motivo {
+  transform: scale(1.08) rotate(-2deg);
+}
+
+.canal[data-enfocado="true"] .canal-brillo {
+  animation: brillo 1.1s ease-out;
+}
+
+@keyframes late {
+  50% {
+    box-shadow:
+      inset 0 0 0 1px var(--color-marco),
+      0 0 0 4px #4d8bff,
+      0 0 0 11px rgb(31 95 224 / 0.12),
+      0 1.2rem 2rem -0.8rem rgb(10 26 58 / 0.45);
+  }
+}
+
+@keyframes brillo {
+  to {
+    translate: 120% 0;
+  }
+}
+
+.canal:active .canal-marco,
+.canal:active .canal-pantalla {
+  transform: scale(1.02);
+  transition-duration: 90ms;
+}
+
+/* ---------------------------------------------------------------------------
+   Motivos animados.
+--------------------------------------------------------------------------- */
+.escritorio {
+  fill: var(--tinta);
+  opacity: 0.22;
+  animation: ocupa 5.7s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes ocupa {
+  0%,
+  100% {
+    opacity: 0.22;
+    fill: var(--tinta);
+    scale: 1;
+  }
+  12%,
+  55% {
+    opacity: 1;
+    fill: var(--tinta);
+    scale: 1;
+  }
+  8% {
+    scale: 1.18;
+  }
+  62%,
+  80% {
+    opacity: 1;
+    fill: white;
+  }
+}
+
+.hueco {
+  fill: var(--tinta);
+  opacity: 0.16;
+  animation: aparta 6.3s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes aparta {
+  0%,
+  100% {
+    opacity: 0.16;
+    fill: var(--tinta);
+    scale: 1;
+  }
+  10%,
+  60% {
+    opacity: 1;
+    fill: var(--acento);
+    scale: 1;
+  }
+  6% {
+    scale: 1.15;
+  }
+}
+
+.radar-barrido {
+  transform-origin: 50px 50px;
+  animation: gira 3.2s linear infinite;
+}
+
+@keyframes gira {
+  to {
+    rotate: -360deg;
+  }
+}
+
+.radar-punto {
+  opacity: 0;
+  animation: aparece 3.2s ease-out infinite;
+}
+
+.radar-onda {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: onda 3.2s ease-out infinite;
+}
+
+@keyframes aparece {
+  0% {
+    opacity: 0;
+  }
+  8%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes onda {
+  0% {
+    opacity: 0.9;
+    scale: 1;
+  }
+  45%,
+  100% {
+    opacity: 0;
+    scale: 3.6;
+  }
+}
+
+.rayo-flota {
+  animation: flota 4s ease-in-out infinite;
+}
+
+@keyframes flota {
+  50% {
+    translate: 0 -6%;
+    rotate: 4deg;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   La vista previa de un canal.
+--------------------------------------------------------------------------- */
+.vista-pantalla {
+  position: absolute;
+  inset: clamp(0.75rem, 2.5vw, 2rem) clamp(0.75rem, 2.5vw, 2rem) clamp(6.5rem, 15vh, 8.5rem);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  overflow: hidden;
+  padding: clamp(1.5rem, 5vw, 5rem);
+  border-radius: 2rem;
+  background:
+    radial-gradient(90% 80% at 15% 0%, color-mix(in oklab, var(--fondo) 65%, white), transparent 60%),
+    var(--fondo);
+  box-shadow:
+    0 0 0 6px white,
+    0 0 0 7px var(--color-marco),
+    0 2rem 4rem -1rem rgb(10 26 58 / 0.4);
+}
+
+.vista-arte {
+  order: 2;
+  display: grid;
+  place-items: center;
+  height: min(52vh, 30rem);
+  color: var(--tinta);
+}
+
+.vista-arte > svg {
+  max-height: 100%;
+}
+
+.vista-foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 6px solid white;
+  border-radius: 1.25rem;
+  box-shadow: 0 1.5rem 3rem -1rem rgb(10 26 58 / 0.45);
+  rotate: 2deg;
+}
+
+.vista-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: kenburns 14s ease-in-out infinite alternate;
+}
+
+.vista-texto {
+  position: relative;
+  order: 1;
+  color: var(--tinta);
+}
+
+.vista-subtitulo {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.vista-nombre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 8.5rem);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.vista-descripcion {
+  max-width: 34rem;
+  margin: 1.5rem 0 0;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--tinta) 70%, var(--color-tinta));
+}
+
+.vista-url {
+  display: inline-block;
+  margin: 1.25rem 0 0;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.55);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .vista-pantalla {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 1.5rem;
+  }
+  .vista-arte {
+    order: 0;
+    height: 28vh;
+  }
+}
+
+.vista-barra {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  height: clamp(5.5rem, 13vh, 7.25rem);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 6vw, 6rem);
+  border-top: 2.5px solid var(--color-tec);
+  background: linear-gradient(180deg, var(--color-bandeja-alta), var(--color-bandeja-baja));
+}
+
+/* Los botones de cápsula del Wii: blancos, con borde gris; al señalarlos se iluminan en azul. */
+.boton-capsula {
+  min-width: clamp(8.5rem, 22vw, 15rem);
+  height: clamp(3.2rem, 7vh, 4rem);
+  padding: 0 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #eef1f6);
+  box-shadow:
+    inset 0 0 0 2px var(--color-marco),
+    0 2px 4px rgb(10 26 58 / 0.12);
+  color: #5a6478;
+  font-family: var(--font-reloj);
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    color 180ms ease;
+}
+
+.boton-capsula-principal {
+  color: var(--color-tec);
+}
+
+.boton-capsula:hover,
+.boton-capsula:focus-visible {
+  transform: scale(1.07);
+  color: var(--color-tec);
+  box-shadow:
+    inset 0 0 0 2px var(--color-tec),
+    0 0 0 5px rgb(31 95 224 / 0.2),
+    0 0.5rem 1rem -0.3rem rgb(31 95 224 / 0.45);
+}
+
+.boton-capsula:active {
+  transform: scale(0.98);
+}
+
+/* ---------------------------------------------------------------------------
+   La bandeja inferior.
+--------------------------------------------------------------------------- */
+.bandeja {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 20;
+  height: 9rem;
+  pointer-events: none;
+}
+
+.bandeja-forma {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 7rem;
+  filter: drop-shadow(0 -4px 10px rgb(10 26 58 / 0.08));
+}
+
+.bandeja-reloj {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 4.6rem;
+  translate: -50% 0;
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-reloj);
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-gris-reloj);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 white;
+}
+
+.bandeja-dospuntos {
+  margin: 0 0.04em;
+  animation: parpadea 2s steps(1) infinite;
+}
+
+@keyframes parpadea {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.bandeja-ampm {
+  margin-left: 0.3em;
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.bandeja-fecha {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 1.6rem;
+  translate: -50% 0;
+  font-family: var(--font-reloj);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 600;
+  color: #7b8597;
+}
+
+.bandeja-boton {
+  position: absolute;
+  bottom: 1.15rem;
+  display: grid;
+  width: clamp(4rem, 7vw, 5.5rem);
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #ffffff, #e9ecf2);
+  box-shadow:
+    inset 0 0 0 2px var(--color-marco),
+    0 0 0 5px var(--color-bandeja-alta),
+    0 0 0 6.5px var(--color-marco),
+    0 4px 10px rgb(10 26 58 / 0.15);
+  color: #7b8597;
+  pointer-events: auto;
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.bandeja-boton.izquierda {
+  left: max(1rem, 2.5%);
+}
+
+.bandeja-boton.derecha {
+  right: max(1rem, 2.5%);
+  cursor: pointer;
+}
+
+.bandeja-boton.derecha:hover,
+.bandeja-boton.derecha:focus-visible {
+  transform: scale(1.08);
+  color: var(--color-tec);
+  box-shadow:
+    inset 0 0 0 2px var(--color-tec),
+    0 0 0 5px var(--color-bandeja-alta),
+    0 0 0 6.5px var(--color-tec),
+    0 6px 14px rgb(31 95 224 / 0.3);
+}
+
+.bandeja-cuenta {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  display: grid;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  place-items: center;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--color-tec);
+  box-shadow: 0 0 0 2px white;
+  color: white;
+  font-family: var(--font-reloj);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .bandeja-fecha {
+    display: none;
+  }
+  .bandeja-reloj {
+    bottom: 1.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
