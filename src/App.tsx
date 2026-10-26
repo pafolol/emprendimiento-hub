@@ -86,14 +86,6 @@ export default function App() {
       <div className="menu-ambiente" aria-hidden />
 
       <header className="relative z-10 flex flex-col items-center px-4 pt-[clamp(1.5rem,5vh,3.5rem)] text-center">
-        <motion.p
-          className="mb-3 font-mono text-[11px] font-semibold tracking-[0.28em] text-tec uppercase"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Tec de Monterrey · Proyectos del área
-        </motion.p>
         <h1 className="titulo" aria-label="Emprendimiento Hub">
           <motion.svg
             viewBox="0 0 100 100"
