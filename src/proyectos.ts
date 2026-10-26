@@ -28,8 +28,7 @@ export const PROYECTOS: Proyecto[] = [
     subtitulo: 'Coworking GDL',
     descripcion:
       '33 espacios fijos que se ganan y se conservan con uso real. Solicitudes, check-ins con QR, corte semanal y mensajes en un solo panel.',
-    // TODO: confirmar el dominio del frontend del coworking.
-    url: 'https://coworking.pafodev.com',
+    url: 'https://coworking.emprendimientohub.com',
     fondo: '#c6f23a',
     tinta: '#0a3dba',
     acento: '#06123a',
@@ -41,7 +40,7 @@ export const PROYECTOS: Proyecto[] = [
     subtitulo: 'Buscador de oportunidades',
     descripcion:
       'Busca en la web hackathones, convocatorias, competencias, aceleradoras y fondos, y los cruza con los proyectos del área.',
-    url: 'https://hackathon.pafodev.com',
+    url: 'https://hackathon.emprendimientohub.com',
     fondo: '#d6e4ff',
     tinta: '#0039a6',
     acento: '#1f5fe0',
@@ -53,8 +52,7 @@ export const PROYECTOS: Proyecto[] = [
     subtitulo: 'Reserva de espacios',
     descripcion:
       'Calendario de disponibilidad para reservar salas: las de uso común se confirman al instante y las especiales o de fin de semana pasan por aprobación, con aviso por correo.',
-    // TODO: confirmar el dominio del frontend de reservas.
-    url: 'https://booking.pafodev.com',
+    url: 'https://booking.emprendimientohub.com',
     fondo: '#171717',
     tinta: '#ffffff',
     acento: '#3b6ef5',
